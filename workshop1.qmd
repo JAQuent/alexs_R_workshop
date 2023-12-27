@@ -46,6 +46,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 :::
 
 ## Where to find material {.smaller}
+::: incremental
 -   *Using RMarkdown to create scientific manuscripts* can be found under: [https://github.com/JAQuent/methodsDay2017](https://github.com/JAQuent/methodsDay2017)
 -   List of available books (no recommendations):
     - Dalgaard - Introductory Statistics with R
@@ -54,9 +55,11 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
     - Navarro - Learning Statistics With R
 - Most books are probably only suited for absolute beginners.
 - Use help function e.g. `help(rnorm)`.
-- If you already know basic programming use google "R + your question" or some AI chatbot. 
+- If you already know basic programming, use google "R + your question" or some AI chatbot. 
 - Slides, code etc. from this workshop: [https://github.com/JAQuent/alexs_R_workshop](https://github.com/JAQuent/alexs_R_workshop)
-    
+
+:::
+
 ## 1. The R universe 
 ::: incremental
 - The programming language is called __R__ similar to Python or Matlab. 
@@ -220,8 +223,6 @@ our_function <- function(x){
 our_function(10)
 ```
 
-
-
 ## 3. How to comment in R(Studio) {.smaller}
 ```{r}
 # Simple comment
@@ -236,7 +237,7 @@ We can use comments not only to make our __code understandable__ to later versio
 ![](images/comments.png)
 
 ## 4. Summary stats: mean, sd etc. {.smaller}
-Summary are all part of the base package
+The summary stats below are all part of the base package
 
 ```{r}
 # Create variable
@@ -265,6 +266,13 @@ but we can also install from GitHub e.g.
 # devtools::install_github("JAQuent/assortedRFunctions", upgrade = "never")
 ```
 
+We load a library using
+
+```{r}
+library(assortedRFunctions)
+```
+
+
 ## 6. Saving and loading various data {.smaller}
 
 There are several ways to save data:
@@ -285,7 +293,7 @@ save.image(file = "data/workspace.RData")
 
 ## 6. Saving and loading various data {.smaller}
 
-We can read data in in several ways:
+We can read data/load in several ways:
 
 ```{r}
 # Tab-separated

@@ -446,20 +446,22 @@ Joern Alexander Quent
 </section>
 <section id="where-to-find-material" class="slide level2 smaller">
 <h2>Where to find material</h2>
+<div>
 <ul>
-<li><em>Using RMarkdown to create scientific manuscripts</em> can be found under: <a href="https://github.com/JAQuent/methodsDay2017">https://github.com/JAQuent/methodsDay2017</a></li>
-<li>List of available books (no recommendations):
+<li class="fragment"><em>Using RMarkdown to create scientific manuscripts</em> can be found under: <a href="https://github.com/JAQuent/methodsDay2017">https://github.com/JAQuent/methodsDay2017</a></li>
+<li class="fragment">List of available books (no recommendations):
 <ul>
-<li>Dalgaard - Introductory Statistics with R</li>
-<li>Field - Discovering Statistics Using R</li>
-<li>Kerns - Introduction to Probability and Statistics Using R</li>
-<li>Navarro - Learning Statistics With R</li>
+<li class="fragment">Dalgaard - Introductory Statistics with R</li>
+<li class="fragment">Field - Discovering Statistics Using R</li>
+<li class="fragment">Kerns - Introduction to Probability and Statistics Using R</li>
+<li class="fragment">Navarro - Learning Statistics With R</li>
 </ul></li>
-<li>Most books are probably only suited for absolute beginners.</li>
-<li>Use help function e.g.&nbsp;<code>help(rnorm)</code>.</li>
-<li>If you already know basic programming use google “R + your question” or some AI chatbot.</li>
-<li>Slides, code etc. from this workshop: <a href="https://github.com/JAQuent/alexs_R_workshop">https://github.com/JAQuent/alexs_R_workshop</a></li>
+<li class="fragment">Most books are probably only suited for absolute beginners.</li>
+<li class="fragment">Use help function e.g.&nbsp;<code>help(rnorm)</code>.</li>
+<li class="fragment">If you already know basic programming, use google “R + your question” or some AI chatbot.</li>
+<li class="fragment">Slides, code etc. from this workshop: <a href="https://github.com/JAQuent/alexs_R_workshop">https://github.com/JAQuent/alexs_R_workshop</a></li>
 </ul>
+</div>
 </section>
 <section id="the-r-universe" class="slide level2">
 <h2>1. The R universe</h2>
@@ -681,7 +683,7 @@ $f
 <img data-src="images/comments.png" class="r-stretch"></section>
 <section id="summary-stats-mean-sd-etc." class="slide level2 smaller">
 <h2>4. Summary stats: mean, sd etc.</h2>
-<p>Summary are all part of the base package</p>
+<p>The summary stats below are all part of the base package</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="co"># Create variable</span></span>
 <span id="cb27-2"><a href="#cb27-2"></a>var3 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="fl">4.2</span>, <span class="dv">10</span>)</span>
@@ -728,31 +730,35 @@ $f
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="co"># devtools::install_github("JAQuent/assortedRFunctions", upgrade = "never")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>We load a library using</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">library</span>(assortedRFunctions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="saving-and-loading-various-data" class="slide level2 smaller">
 <h2>6. Saving and loading various data</h2>
 <p>There are several ways to save data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co"># Tab-separated</span></span>
-<span id="cb43-2"><a href="#cb43-2"></a><span class="fu">write.table</span>(e, <span class="at">file =</span> <span class="st">"data/tab_sep_data.txt"</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb43-3"><a href="#cb43-3"></a></span>
-<span id="cb43-4"><a href="#cb43-4"></a><span class="co"># Comma-separated</span></span>
-<span id="cb43-5"><a href="#cb43-5"></a><span class="fu">write.csv</span>(e, <span class="at">file =</span> <span class="st">"data/comma_sep_data.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb43-6"><a href="#cb43-6"></a></span>
-<span id="cb43-7"><a href="#cb43-7"></a><span class="co"># Save the variable</span></span>
-<span id="cb43-8"><a href="#cb43-8"></a><span class="fu">save</span>(e, <span class="at">file =</span> <span class="st">"data/only_e.RData"</span>)</span>
-<span id="cb43-9"><a href="#cb43-9"></a></span>
-<span id="cb43-10"><a href="#cb43-10"></a><span class="co"># Save everything in the workspace</span></span>
-<span id="cb43-11"><a href="#cb43-11"></a><span class="fu">save.image</span>(<span class="at">file =</span> <span class="st">"data/workspace.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="co"># Tab-separated</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a><span class="fu">write.table</span>(e, <span class="at">file =</span> <span class="st">"data/tab_sep_data.txt"</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb44-3"><a href="#cb44-3"></a></span>
+<span id="cb44-4"><a href="#cb44-4"></a><span class="co"># Comma-separated</span></span>
+<span id="cb44-5"><a href="#cb44-5"></a><span class="fu">write.csv</span>(e, <span class="at">file =</span> <span class="st">"data/comma_sep_data.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb44-6"><a href="#cb44-6"></a></span>
+<span id="cb44-7"><a href="#cb44-7"></a><span class="co"># Save the variable</span></span>
+<span id="cb44-8"><a href="#cb44-8"></a><span class="fu">save</span>(e, <span class="at">file =</span> <span class="st">"data/only_e.RData"</span>)</span>
+<span id="cb44-9"><a href="#cb44-9"></a></span>
+<span id="cb44-10"><a href="#cb44-10"></a><span class="co"># Save everything in the workspace</span></span>
+<span id="cb44-11"><a href="#cb44-11"></a><span class="fu">save.image</span>(<span class="at">file =</span> <span class="st">"data/workspace.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="saving-and-loading-various-data-1" class="slide level2 smaller">
 <h2>6. Saving and loading various data</h2>
-<p>We can read data in in several ways:</p>
+<p>We can read data/load in several ways:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="co"># Tab-separated</span></span>
-<span id="cb44-2"><a href="#cb44-2"></a>tsv <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"data/tab_sep_data.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb44-3"><a href="#cb44-3"></a><span class="fu">head</span>(tsv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="co"># Tab-separated</span></span>
+<span id="cb45-2"><a href="#cb45-2"></a>tsv <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"data/tab_sep_data.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb45-3"><a href="#cb45-3"></a><span class="fu">head</span>(tsv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  memory_score BOLD_signal
 1  -1.56809293    2.572763
@@ -762,9 +768,9 @@ $f
 5  -2.37408807    2.250365
 6   0.14180698    3.256723</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="co"># Comma-separated</span></span>
-<span id="cb46-2"><a href="#cb46-2"></a>csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/comma_sep_data.csv"</span>)</span>
-<span id="cb46-3"><a href="#cb46-3"></a><span class="fu">head</span>(csv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co"># Comma-separated</span></span>
+<span id="cb47-2"><a href="#cb47-2"></a>csv <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/comma_sep_data.csv"</span>)</span>
+<span id="cb47-3"><a href="#cb47-3"></a><span class="fu">head</span>(csv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  memory_score BOLD_signal
 1  -1.56809293    2.572763
@@ -774,8 +780,8 @@ $f
 5  -2.37408807    2.250365
 6   0.14180698    3.256723</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="co"># .RData</span></span>
-<span id="cb48-2"><a href="#cb48-2"></a><span class="fu">load</span>(<span class="st">"data/workspace.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="co"># .RData</span></span>
+<span id="cb49-2"><a href="#cb49-2"></a><span class="fu">load</span>(<span class="st">"data/workspace.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Note you can also directly read other types of data (e.g.&nbsp;Excel spreadsheets or Matlab .m files) if you use the correct functions/packages.</p>
 </section></section>
