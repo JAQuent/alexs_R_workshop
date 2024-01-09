@@ -1,0 +1,328 @@
+---
+title: "R Workshop (Part 2)"
+subtitle: "Introduction to R for COGNIZE Lab at ISBTI"
+author: "Joern Alexander Quent"
+date: "2024-01-10"
+date-format: long
+format: revealjs
+editor: visual
+---
+
+```{r setup, include = FALSE, message = FALSE, warnings = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# The R Workshop
+
+## Last session's topics
+1. The R universe: R, Rstudio, RMarkdown etc.
+2. Main variable types & functions
+3. How to comment in R(Studio)
+4. Summary stats: mean, sd etc.
+5. Installing packages from CRAN and from GitHub
+6. Loading & saving various data
+
+## Today's topics
+Today's aim is to give a short demonstration how to load and analyse data. The topics include:
+
+::: incremental
+1. Simple correlation
+2. Themes in ggplot
+3. One sample *t*-tests
+4. Visualising mean/distribution comparisons
+5. Visualising hierarchical data
+:::
+
+## Possible future topics
+::: columns
+::: {.column width="50%"}
+-   Linear algebra in R
+-   Bayesian stats brms and BayesFactor
+-   Working with strings
+-   Using R via command line
+-   Using R for file operations
+-   Using system() in R
+:::
+
+::: {.column width="50%"}
+-   RMarkdown chunks
+-    ~~Using ggplot2 for visualisation~~
+-   fMRI analysis using `ciftiTools`
+-   Creating packages
+-   Running large jobs local
+-   Using the HPC with R and RSlurm
+:::
+:::
+
+## Libraries used in this example
+
+```{r libs}
+library(assortedRFunctions)
+library(plyr)
+library(reshape2)
+library(ggplot2)
+library(cowplot)
+```
+
+
+## The data set
+
+```{r load_data}
+load("data/stroopData.RData")
+```
+
+To find out, what is now in our environment:
+
+```{r objects_in_environment}
+ls()
+```
+
+We find a data frame called `stroopData`, to see what is in there, we use `head`:
+
+```{r head_data}
+head(stroopData)
+```
+
+## The data set {.smaller}
+
+Now, we want to learn something about the data frame itself:
+
+```{r info_data}
+# length_uniq is same as length(unique(stroopData$subNum))
+numSubjects <- length_uniq(stroopData$subNum) 
+numStim     <- length_uniq(stroopData$stimulus) 
+numCond     <- length_uniq(stroopData$congruency) 
+
+# Calculate number of trials using function plyr package
+# ddply = Split data frame, apply function, and return results in a data frame.
+stroopData_trials <- ddply(stroopData, c("subNum"), summarise, numTrials = length(RT))
+numTrials_range   <- range(stroopData_trials$numTrials)
+```
+
+- Number of subjects: `r numSubjects`
+- Number of stimuli: `r numStim`
+- Number of congruency-levels: `r numCond`
+- Number of trials range from `r numTrials_range[1]` & `r numTrials_range[2]` per subject
+
+## 1. Simple correlation {.smaller}
+Next, we're interested whether the avg. RT for the _neutral_ and _incongruent_ conditions are correlated.
+
+```{r avg_RT_cond}
+avg_cond <- ddply(stroopData, c("subNum", "congruency"), summarise, mean_RT = sd(RT))
+head(avg_cond)
+```
+
+Our data is currently in what is called the _long_ format. However, for a correlation analysis it is better to use the _wide_ format. Here I convert the data from long to wide format ([see here](http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/)):
+
+```{r long2wide}
+# Using function from reshape2 package
+avg_cond_wide <- dcast(avg_cond, subNum ~ congruency, value.var = "mean_RT")
+head(avg_cond_wide)
+```
+
+## 1. Simple correlation {.smaller}
+
+```{r correlation}
+cor.test(avg_cond_wide$incongruent, avg_cond_wide$neutral)
+```
+
+## 1. Simple correlation {.smaller}
+
+The best way to visualise correlation is the scatter plot:
+
+```{r scatterplot, fig.width = 4, fig.height = 4}
+p1 <- ggplot(avg_cond_wide, aes(x = neutral, y = incongruent)) + 
+  geom_point(fill = "#ff1aff", pch = 21, size = 2) +
+  geom_smooth(method = "lm", formula = "y ~ x", colour = "darkgrey") +
+  labs(title = 'Relationship between conditions', 
+       x = "neutral RT in msec", 
+       y = "incongruent RT in msec")
+p1 # This will make the plot appear
+```
+
+## 2. Themes in ggplot {.smaller}
+
+I am using `plot_grid` from `cowplot` to combine plots to one figure to show the  different themes ggplot offers. There are more theme from other packages and you can also create your own and/or customise the theme of an existing plot.
+
+```{r ggplot themes, echo = FALSE}
+p1 <- p1 + labs(title = "default")
+p2 <- p1 + labs(title = "theme_bw()") + theme_bw()
+p3 <- p1 + labs(title = "theme_classic()") + theme_classic()
+p4 <- p1 + labs(title = "theme_dark()") + theme_dark()
+p5 <- p1 + labs(title = "theme_gray()") + theme_gray()
+p6 <- p1 + labs(title = "theme_light()") + theme_light()
+p7 <- p1 + labs(title = "theme_linedraw()") + theme_linedraw()
+p8 <- p1 + labs(title = "theme_void()") + theme_void()
+
+plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, nrow = 2)
+```
+
+## 3. One sample *t*-test {.smaller}
+
+Next, we want to know if the avg. RT is different between the conditions. 
+
+```{r t-test}
+# Method 1
+t.test(avg_cond_wide$incongruent, avg_cond_wide$neutral, paired = TRUE, var.equal = TRUE)
+
+# Method 2
+avg_cond_wide$diff <- avg_cond_wide$incongruent - avg_cond_wide$neutral
+t.test(avg_cond_wide$diff)
+```
+## 3. One sample *t*-test 
+If we want to know what the effect size is, we can simply calculate it via
+
+```{r effect_size}
+effSize_d <- mean(avg_cond_wide$diff)/sd(avg_cond_wide$diff)
+effSize_d <- round(effSize_d, 2)
+```
+
+Cohen's *d* is `r effSize_d`.
+
+## 4. Visualising mean/distribution comparisons {.smaller}
+With ggplot, there are various simple ways to visualise the means/distributions of groups or conditions. Many of these geoms can be combined flexibly. 
+
+```{r compare_means, echo = FALSE}
+# Colours for plotting
+colourPalette = c("#99ff66", "#6699ff")
+
+# The bar plot
+## Copied from https://r-graph-gallery.com/4-barplot-with-error-bar.html
+## Calculate the overall average
+avg_cond_agg <- ddply(avg_cond, c("congruency"), summarise, 
+                      sd = sd(mean_RT), 
+                      mean = mean(mean_RT))
+
+## Create plot
+p1 <- ggplot(avg_cond_agg, aes(x = congruency, y = mean, fill = congruency)) +
+  geom_bar(stat="identity", colour = "black") +
+  geom_errorbar(aes(x = congruency, ymin = mean - sd, ymax = mean + sd), width = 0.4) +
+  theme_classic() +
+  coord_cartesian(expand = FALSE, xlim = c(0.4, 2.6)) + 
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "geom_bar() &\ngeom_errorbar()", x = "Congruency", y = "Avg. RT in msec") +
+  theme(legend.position = "none")
+
+# Point range plot
+p2 <- ggplot(avg_cond_agg, aes(colour = congruency)) +
+  geom_pointrange(aes(x = congruency, y = mean, ymin = mean - sd, ymax = mean + sd)) +
+  theme_classic() +
+  coord_cartesian(expand = FALSE, xlim = c(0.4, 2.6)) + 
+  scale_colour_manual(values = colourPalette) +
+  labs(title = "geom_pointrange()\n", x = "Congruency", y = "Avg. RT in msec") +
+  theme(legend.position = "none")
+
+# The box plot
+p3 <- ggplot(avg_cond, aes(x = congruency, y = mean_RT, fill = congruency)) +
+  geom_boxplot() +
+  theme_classic() +
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "geom_boxplot()\n", x = "Congruency", y = "Avg. RT in msec") +
+  theme(legend.position = "none")
+
+# The box plot + jitter
+p4 <- ggplot(avg_cond, aes(x = congruency, y = mean_RT, fill = congruency)) +
+  geom_boxplot() +
+  geom_jitter(height = 0, width = 0.2) +
+  theme_classic() +
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "geom_boxplot() &\ngeom_jitter()", x = "Congruency", y = "Avg. RT in msec") +
+  theme(legend.position = "none")
+
+# The dotplot
+p5 <- ggplot(avg_cond, aes(x = congruency, y = mean_RT, fill = congruency)) +
+  geom_dotplot(binaxis='y', stackdir='center') + 
+  theme_classic() +
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "geom_dotplot()\n", x = "Congruency", y = "Avg. RT in msec") +
+  theme(legend.position = "none")
+
+# The violin plot
+p6 <- ggplot(avg_cond, aes(x = congruency, y = mean_RT, fill = congruency)) +
+  geom_violin() +
+  theme_classic() +
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "geom_violin()\n", x = "Congruency", y = "Avg. RT in msec") +
+  theme(legend.position = "none")
+
+# Density plot
+p7 <- ggplot(avg_cond, aes(x = mean_RT, fill = congruency)) +
+  geom_density(alpha = 0.5) +
+  theme_classic() +
+  coord_cartesian(expand = FALSE) + 
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "geom_density()\n", x = "Avg. RT in msec", y = "Density") +
+  theme(legend.position = "none")
+
+# Histogram plot
+p8 <- ggplot(avg_cond, aes(x = mean_RT, fill = congruency)) +
+  geom_histogram() +
+  theme_classic() +
+  coord_cartesian(expand = FALSE) + 
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "geom_histogram()\n", x = "Avg. RT in msec", y = "Count") +
+  theme(legend.position = "none")
+
+
+# Combine all plots
+plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, nrow = 2)
+```
+
+## 5. Visualising hierarchical data {.smaller}
+Another way to visualise the data is to use `geom_line` and show each subject. For this we use the data that has been averaged across the different stimuli.  
+
+```{r hierarchical_plot, fig.width = 4, fig.height = 4}
+ggplot(avg_cond, aes(x = congruency, y = mean_RT)) + 
+  geom_point(aes(colour = congruency)) +
+  geom_line(aes(group = subNum)) +
+  theme_classic() +
+  scale_colour_manual(values = colourPalette) +
+  labs(title = "Hierarchical data\n", x = "Congruency", y = "Avg. RT in msec") +
+  theme(legend.position = "none")
+```
+
+## 5. Visualising hierarchical data {.smaller}
+The last interesting I want introduce is facets (using `facet_grid` or `facet_wrap`).
+
+```{r hierarchical_plot2, fig.width = 8, fig.height = 4}
+# Convert stimulus to factor
+stroopData$stimulus <- as.factor(stroopData$stimulus)
+
+ggplot(stroopData, aes(x = stimulus, y = RT, fill = congruency)) + 
+  facet_grid(~congruency, scales = "free_x") + 
+  geom_boxplot() + 
+  theme_classic() +
+  scale_fill_manual(values = colourPalette) +
+  labs(title = "Hierarchical data 2\n", x = "Stimulus", y = "RT in msec") +
+  theme(legend.position = "none")
+```
+
+## Functions used {.smaller}
+::: columns
+::: {.column width="50%"}
+- base
+	- head
+	- ls
+	- load
+	- range
+	- mean
+	- cor.test
+	- t.test
+	- sd
+	- round
+	- as.factor
+:::
+
+::: {.column width="50%"}
+- assortedRFunctions (my random collection)
+	- length_uniq
+- plyr
+	- ddply
+- reshape2
+	- dcast
+- ggplot2
+	- ggplot
+- cowplot
+	- plot_grid
+:::
+:::

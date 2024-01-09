@@ -15,16 +15,18 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # The R Workshop
 
 ## Today's topics
+
 ::: incremental
-1. The R universe: R, Rstudio, RMarkdown etc.
-2. Main variable types & functions
-3. How to comment in R(Studio)
-4. Summary stats: mean, sd etc.
-5. Installing packages from CRAN and from GitHub
-6. Loading & saving various data
+1.  The R universe: R, Rstudio, RMarkdown etc.
+2.  Main variable types & functions
+3.  How to comment in R(Studio)
+4.  Summary stats: mean, sd etc.
+5.  Installing packages from CRAN and from GitHub
+6.  Loading & saving various data
 :::
 
 ## Possible future topics
+
 ::: columns
 ::: {.column width="50%"}
 -   Linear algebra in R
@@ -46,33 +48,35 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 :::
 
 ## Where to find material {.smaller}
-::: incremental
--   *Using RMarkdown to create scientific manuscripts* can be found under: [https://github.com/JAQuent/methodsDay2017](https://github.com/JAQuent/methodsDay2017)
--   List of available books (no recommendations):
-    - Dalgaard - Introductory Statistics with R
-    - Field - Discovering Statistics Using R
-    - Kerns - Introduction to Probability and Statistics Using R
-    - Navarro - Learning Statistics With R
-- Most books are probably only suited for absolute beginners.
-- Use help function e.g. `help(rnorm)`.
-- If you already know basic programming, use google "R + your question" or some AI chatbot. 
-- Slides, code etc. from this workshop: [https://github.com/JAQuent/alexs_R_workshop](https://github.com/JAQuent/alexs_R_workshop)
 
+::: incremental
+-   *Using RMarkdown to create scientific manuscripts* can be found under: <https://github.com/JAQuent/methodsDay2017>
+-   List of available books (no recommendations):
+    -   Dalgaard - Introductory Statistics with R
+    -   Field - Discovering Statistics Using R
+    -   Kerns - Introduction to Probability and Statistics Using R
+    -   Navarro - Learning Statistics With R
+-   Most books are probably only suited for absolute beginners.
+-   Use help function e.g. `help(rnorm)`.
+-   If you already know basic programming, use google "R + your question" or some AI chatbot.
+-   Slides, code etc. from this workshop: <https://github.com/JAQuent/alexs_R_workshop>
 :::
 
-## 1. The R universe 
-::: incremental
-- The programming language is called __R__ similar to Python or Matlab. 
-- __Rstudio__ is an integrated development environment (IDE). 
-- __RMarkdown__ can be used to combine data analysis and production of documents, presentations etc. 
-  - Most importantly it allows you to have code alongside text i.e. perfect for notebooks and _reproducible_ analyses.
+## 1. The R universe
 
+::: incremental
+-   The programming language is called **R** similar to Python or Matlab.
+-   **Rstudio** is an integrated development environment (IDE).
+-   **RMarkdown** can be used to combine data analysis and production of documents, presentations etc.
+    -   Most importantly it allows you to have code alongside text i.e. perfect for notebooks and *reproducible* analyses.
 :::
 
 ## 2. Main variable types & functions {.smaller}
+
 In R you can use `<-` as well as `=` to assign things to variables. There are [small differences](https://stackoverflow.com/questions/6140694/is-there-a-technical-difference-between-and) and it often recommended to use `<-`.
 
 In R we have various types of variables:
+
 ```{r}
 # Numbers
 a <- 1.3
@@ -81,23 +85,24 @@ a <- 1.3
 b <- c(1, 2, 3, 5, 6, 7) # We can do the same with b <- 1:7
 ```
 
-By the way `c()` can also be used to __concatenate__ vectors. For instance,
+By the way `c()` can also be used to **concatenate** vectors. For instance,
 
 ```{r}
 c1 <- c(a, b)
 c1
 ```
 
-Because of this `c` is __not__ a good variable name.
+Because of this `c` is **not** a good variable name.
 
-In contrast to Matlab, R is __not a headache__ when working with strings. 
+In contrast to Matlab, R is **not a headache** when working with strings.
 
 ```{r}
 d <- "Hello World"
 ```
 
 ## 2. Main variable types & functions {.smaller}
-R's probably most useful type is the __data frame__ because it will be heavily used for visualisation and data analysis.
+
+R's probably most useful type is the **data frame** because it will be heavily used for visualisation and data analysis.
 
 ```{r}
 # Seed to get the same result everytime (important when dealing with random stuff)
@@ -118,6 +123,7 @@ head(e)
 ```
 
 ## 2. Main variable types & functions {.smaller}
+
 We also the matrix that can be used for linear algebra
 
 ```{r}
@@ -125,7 +131,7 @@ f <- matrix(1:10, nrow = 2, ncol = 5, byrow = TRUE)
 f
 ```
 
-A list can be used for more complex structures including nested lists. 
+A list can be used for more complex structures including nested lists.
 
 ```{r}
 h <- list(a = a, f = f)
@@ -133,6 +139,7 @@ h
 ```
 
 ## 2. Main variable types & functions {.smaller}
+
 We can access entry of vectors, data frames, matrices and lists in various ways.
 
 ```{r}
@@ -146,9 +153,9 @@ f[2, 4]
 h[[2]]
 ```
 
-
 ## 2. Main variable types & functions {.smaller}
-If you want to concatenate a large number of data frames __DON'T__ use rbind(). 
+
+If you want to concatenate a large number of data frames **DON'T** use rbind().
 
 ```{r eval = FALSE}
 results <- rbind(results, data.frame(x = a, y = b))
@@ -161,7 +168,8 @@ To go from list to df we can use rbindlist() from data.table.
 ![](images/rbind_vs_list.png)
 
 ## 2. Main variable types & functions {.smaller}
-One of the most important functions are __loops__ and __if-statements__. They are pretty simple in R.
+
+One of the most important functions are **loops** and **if-statements**. They are pretty simple in R.
 
 For Loops:
 
@@ -177,6 +185,7 @@ for(i in 1:nIter){
 
 g
 ```
+
 ## 2. Main variable types & functions {.smaller}
 
 While loops:
@@ -195,7 +204,9 @@ while(i <= nIter){
 
 g
 ```
+
 ## 2. Main variable types & functions {.smaller}
+
 If-statements:
 
 ```{r}
@@ -213,6 +224,7 @@ if(var1 < 0.1){
 }
 var2
 ```
+
 Custom functions are created like this
 
 ```{r}
@@ -224,6 +236,7 @@ our_function(10)
 ```
 
 ## 3. How to comment in R(Studio) {.smaller}
+
 ```{r}
 # Simple comment
 
@@ -232,11 +245,12 @@ our_function(10)
 # */
 ```
 
-We can use comments not only to make our __code understandable__ to later version of ourselves and other people but certain comment formats can also be useful navigation the scripts in RStudio. 
+We can use comments not only to make our **code understandable** to later version of ourselves and other people but certain comment formats can also be useful navigation the scripts in RStudio.
 
 ![](images/comments.png)
 
 ## 4. Summary stats: mean, sd etc. {.smaller}
+
 The summary stats below are all part of the base package
 
 ```{r}
@@ -254,7 +268,8 @@ summary(var3)
 ```
 
 ## 5. Installing packages from CRAN and from GitHub {.smaller}
-Packages are mostly installed from CRAN aka _Comprehensive R Archive Network_. 
+
+Packages are mostly installed from CRAN aka *Comprehensive R Archive Network*.
 
 ```{r}
 # install.packages("devtools")
@@ -271,7 +286,6 @@ We load a library using
 ```{r}
 library(assortedRFunctions)
 ```
-
 
 ## 6. Saving and loading various data {.smaller}
 
@@ -308,7 +322,6 @@ head(csv)
 load("data/workspace.RData")
 ```
 
-Note you can also directly read other types of data (e.g. Excel spreadsheets or Matlab .m files) if you use the correct functions/packages. 
+Note you can also directly read other types of data (e.g. Excel spreadsheets or Matlab .m files) if you use the correct functions/packages.
 
 # The end
-
