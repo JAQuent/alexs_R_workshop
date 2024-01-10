@@ -516,16 +516,16 @@ Joern Alexander Quent
 <h2>1. Simple correlation</h2>
 <p>Next, we’re interested whether the avg. RT for the <em>neutral</em> and <em>incongruent</em> conditions are correlated.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>avg_cond <span class="ot">&lt;-</span> <span class="fu">ddply</span>(stroopData, <span class="fu">c</span>(<span class="st">"subNum"</span>, <span class="st">"congruency"</span>), summarise, <span class="at">mean_RT =</span> <span class="fu">sd</span>(RT))</span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>avg_cond <span class="ot">&lt;-</span> <span class="fu">ddply</span>(stroopData, <span class="fu">c</span>(<span class="st">"subNum"</span>, <span class="st">"congruency"</span>), summarise, <span class="at">sd_RT =</span> <span class="fu">sd</span>(RT), <span class="at">mean_RT =</span> <span class="fu">mean</span>(RT))</span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="fu">head</span>(avg_cond)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  subNum  congruency  mean_RT
-1      1 incongruent 167.5040
-2      1     neutral 163.2255
-3      2 incongruent 277.9574
-4      2     neutral 251.5209
-5      3 incongruent 201.9699
-6      3     neutral 250.3816</code></pre>
+<pre><code>  subNum  congruency    sd_RT  mean_RT
+1      1 incongruent 167.5040 742.0000
+2      1     neutral 163.2255 715.1848
+3      2 incongruent 277.9574 805.5059
+4      2     neutral 251.5209 756.7079
+5      3 incongruent 201.9699 675.1753
+6      3     neutral 250.3816 679.0000</code></pre>
 </div>
 </div>
 <p>Our data is currently in what is called the <em>long</em> format. However, for a correlation analysis it is better to use the <em>wide</em> format. Here I convert the data from long to wide format (<a href="http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/">see here</a>):</p>
@@ -534,13 +534,13 @@ Joern Alexander Quent
 <span id="cb10-2"><a href="#cb10-2"></a>avg_cond_wide <span class="ot">&lt;-</span> <span class="fu">dcast</span>(avg_cond, subNum <span class="sc">~</span> congruency, <span class="at">value.var =</span> <span class="st">"mean_RT"</span>)</span>
 <span id="cb10-3"><a href="#cb10-3"></a><span class="fu">head</span>(avg_cond_wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  subNum incongruent   neutral
-1      1   167.50399 163.22552
-2      2   277.95741 251.52088
-3      3   201.96993 250.38161
-4      4   250.41876 235.75341
-5      5    91.27664  72.34460
-6      6   143.28328  89.25404</code></pre>
+<pre><code>  subNum incongruent  neutral
+1      1    742.0000 715.1848
+2      2    805.5059 756.7079
+3      3    675.1753 679.0000
+4      4    765.9438 733.6146
+5      5    546.3000 550.5354
+6      6    608.6100 549.2059</code></pre>
 </div>
 </div>
 </section>
@@ -553,13 +553,13 @@ Joern Alexander Quent
     Pearson's product-moment correlation
 
 data:  avg_cond_wide$incongruent and avg_cond_wide$neutral
-t = 7.9579, df = 24, p-value = 3.465e-08
+t = 7.9859, df = 24, p-value = 3.256e-08
 alternative hypothesis: true correlation is not equal to 0
 95 percent confidence interval:
- 0.6927187 0.9316211
+ 0.6942743 0.9320158
 sample estimates:
       cor 
-0.8515718 </code></pre>
+0.8523933 </code></pre>
 </div>
 </div>
 </section>
@@ -593,13 +593,13 @@ sample estimates:
     Paired t-test
 
 data:  avg_cond_wide$incongruent and avg_cond_wide$neutral
-t = 3.9845, df = 25, p-value = 0.0005155
+t = 4.1445, df = 25, p-value = 0.0003416
 alternative hypothesis: true mean difference is not equal to 0
 95 percent confidence interval:
- 15.40009 48.35326
+ 29.64994 88.22719
 sample estimates:
 mean difference 
-       31.87668 </code></pre>
+       58.93857 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># Method 2</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a>avg_cond_wide<span class="sc">$</span>diff <span class="ot">&lt;-</span> avg_cond_wide<span class="sc">$</span>incongruent <span class="sc">-</span> avg_cond_wide<span class="sc">$</span>neutral</span>
@@ -609,13 +609,13 @@ mean difference
     One Sample t-test
 
 data:  avg_cond_wide$diff
-t = 3.9845, df = 25, p-value = 0.0005155
+t = 4.1445, df = 25, p-value = 0.0003416
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 15.40009 48.35326
+ 29.64994 88.22719
 sample estimates:
 mean of x 
- 31.87668 </code></pre>
+ 58.93857 </code></pre>
 </div>
 </div>
 </section>
@@ -626,7 +626,7 @@ mean of x
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>effSize_d <span class="ot">&lt;-</span> <span class="fu">mean</span>(avg_cond_wide<span class="sc">$</span>diff)<span class="sc">/</span><span class="fu">sd</span>(avg_cond_wide<span class="sc">$</span>diff)</span>
 <span id="cb19-2"><a href="#cb19-2"></a>effSize_d <span class="ot">&lt;-</span> <span class="fu">round</span>(effSize_d, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Cohen’s <em>d</em> is 0.78.</p>
+<p>Cohen’s <em>d</em> is 0.81.</p>
 </section>
 <section id="visualising-meandistribution-comparisons" class="slide level2 smaller">
 <h2>4. Visualising mean/distribution comparisons</h2>

@@ -108,7 +108,7 @@ numTrials_range   <- range(stroopData_trials$numTrials)
 Next, we're interested whether the avg. RT for the _neutral_ and _incongruent_ conditions are correlated.
 
 ```{r avg_RT_cond}
-avg_cond <- ddply(stroopData, c("subNum", "congruency"), summarise, mean_RT = sd(RT))
+avg_cond <- ddply(stroopData, c("subNum", "congruency"), summarise, sd_RT = sd(RT), mean_RT = mean(RT))
 head(avg_cond)
 ```
 
