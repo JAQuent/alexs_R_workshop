@@ -1,0 +1,453 @@
+---
+title: "R Workshop (Part 3)"
+subtitle: "Introduction to R for COGNIZE Lab at ISBTI"
+author: "Joern Alexander Quent"
+date: "2024-01-24"
+date-format: long
+format: revealjs
+editor: visual
+---
+
+```{r setup, include = FALSE, message = FALSE, warnings = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# The R Workshop
+
+## Last session's topics
+
+1.  Simple correlation
+2.  Themes in ggplot
+3.  One sample *t*-tests
+4.  Visualising mean/distribution comparisons
+5.  Visualising hierarchical data
+
+## Today's topics
+
+Today's aim is to give a short demonstration how to use `ciftiTools`. The topics include:
+
+::: columns
+::: {.column width="50%"}
+1. Introduction to `ciftiTools`
+2. Setting `ciftiTools` up
+3. Loading files
+4. Visualising `CIFTI` images
+5. Explore `XIFTI` objects
+:::
+
+::: {.column width="50%"}
+6. Using masks
+7. Doing math with `XIFTI`
+8. Smoothing
+9. Clusters
+10. Misc
+:::
+:::
+
+## Possible future topics
+
+::: columns
+::: {.column width="50%"}
+-   Linear algebra in R
+-   Bayesian stats brms and BayesFactor
+-   Working with strings
+-   Using R via command line
+-   Using R for file operations
+-   Using system() in R
+:::
+
+::: {.column width="50%"}
+-   RMarkdown chunks
+-   ~~Using ggplot2 for visualisation~~
+-   ~~fMRI analysis using `ciftiTools`~~
+-   Creating packages
+-   Running large jobs local
+-   Using the HPC with R and RSlurm
+:::
+:::
+
+## 0. Libraries used
+
+```{r libs}
+library(assortedRFunctions)
+library(ciftiTools)
+library(ggplot2)
+```
+
+## 1. Introduction to `ciftiTools`
+
+![](images/NeuroImage_overview.png)
+
+## 2. Setting `ciftiTools` up {.smaller}
+
+```{r setting_it_up}
+# Use correct locations and other settings based on computer
+if(Sys.info()[4] == "DESKTOP-335I26I"){
+  # Work laptop (Windows)
+  ## Setting paths to workbench installation
+  ciftiTools.setOption("wb_path", "C:/Program Files/workbench-windows64-v1.5.0/workbench/bin_windows64")
+}  else if(Sys.info()[4] == 'alex-Zenbook-UX3404VA-UX3404VA') {
+  # Work laptop (Linux)
+  ## Setting paths to workbench installation
+  ciftiTools.setOption("wb_path", "/usr/bin/wb_command")
+} 
+```
+
+Important: `ciftiTools.setOption` needs to point to the binary file of our workbench installation.
+
+## 3. Loading files {.smaller}
+
+```{r load_files1}
+# Where do I save the cifti files
+CIFTI_locations <- "data/ciftiFiles/"
+
+# Additional files we're going to use in this tutorial
+MMP <- "Q1-Q6_RelatedValidation210.CorticalAreas_dil_Final_Final_Areas_Group_Colors_with_Atlas_ROIs2.32k_fs_LR.dlabel.nii"
+CAB_NP    <- "CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_netassignments_LR.dlabel.nii"
+surfLeft  <- "S1200.L.inflated_MSMAll.32k_fs_LR.surf.gii"
+surfRight <- "S1200.R.inflated_MSMAll.32k_fs_LR.surf.gii"
+
+# Create paths to make it simpler load
+MMP       <- paste0(CIFTI_locations, MMP)
+CAB_NP    <- paste0(CIFTI_locations, CAB_NP)
+surfLeft  <- paste0(CIFTI_locations, surfLeft)
+surfRight <- paste0(CIFTI_locations, surfRight)
+
+# Load the CIFTI files
+MMP_xifti <- read_cifti(MMP, brainstructures = "all",
+                        surfL_fname = surfLeft, surfR_fname = surfRight)
+CAB_NP_xifti <- read_cifti(CAB_NP, brainstructures = "all",
+                           surfL_fname = surfLeft, surfR_fname = surfRight)
+
+# Loading example results
+zMap_xifti <- read_cifti("data/ciftiFiles/results_lvl2cope1_dat_ztstat_c1.dscalar.nii", 
+                         brainstructures = "all",
+                         surfL_fname = surfLeft, surfR_fname = surfRight)
+pMap1_xifti <- read_cifti("data/ciftiFiles/results_lvl2cope1_dat_ztstat_cfdrp_c1.dscalar.nii", 
+                         brainstructures = "all",
+                         surfL_fname = surfLeft, surfR_fname = surfRight)
+pMap2_xifti <- read_cifti("data/ciftiFiles/results_lvl2cope1_dat_ztstat_cfdrp_c2.dscalar.nii", 
+                         brainstructures = "all",
+                         surfL_fname = surfLeft, surfR_fname = surfRight)
+betaMap_xifti <- read_cifti("data/ciftiFiles/Y1.dtseries.nii", 
+                         brainstructures = "all",
+                         surfL_fname = surfLeft, surfR_fname = surfRight)
+```
+
+## 4. Visualising `CIFTI` images {.smaller}
+```{r visual1}
+view_cifti_surface(MMP_xifti)
+```
+
+## 4. Visualising `CIFTI` images {.smaller}
+
+```{r visual2, eval = FALSE}
+view_cifti_volume(MMP_xifti, plane = "sagittal", n_slices = 12)
+```
+
+![](images/MMP_volume.png)
+
+## 4. Visualising `CIFTI` images {.smaller}
+
+```{r visual3}
+view_cifti_surface(CAB_NP_xifti)
+```
+
+## 4. Visualising `CIFTI` images {.smaller}
+
+```{r visual4, eval = FALSE}
+view_cifti_volume(CAB_NP_xifti, plane = "coronal", n_slices = 12)
+```
+
+![](images/CAB_NP_volume.png)
+
+## 4. Visualising `CIFTI` images {.smaller}
+
+```{r visual5}
+view_cifti_surface(zMap_xifti, legend_embed = FALSE)
+```
+
+## 5. Explore `XIFTI` objects {.smaller}
+
+![](images/NeuroImage_xifti.png)
+
+## 5. Explore `XIFTI` objects {.smaller}
+
+```{r explore1}
+summary(betaMap_xifti)
+```
+
+## 5. Explore `XIFTI` objects {.smaller}
+```{r explore2}
+summary(zMap_xifti)
+```
+
+## 5. Explore `XIFTI` objects {.smaller}
+```{r explore3, eval = FALSE}
+# Three main components of a XIFTI object
+## The data
+zMap_xifti$data$cortex_left
+zMap_xifti$data$cortex_right
+zMap_xifti$data$subcort
+
+## Information on the geometry
+zMap_xifti$surf
+
+## Meta information
+zMap_xifti$meta
+```
+
+We can get the dimension of the data in the right cortex using:
+
+```{r explore4}
+dim(zMap_xifti$data$cortex_right)
+```
+
+## 5. Explore `XIFTI` objects {.smaller}
+Now let's say we want to know where the overall maximum absolute z-value in the right hemisphere is:
+
+```{r explore5}
+# Calculate the absolute values
+abs_z <- abs(zMap_xifti$data$cortex_right)
+
+# Calculate the maximum
+abs_z_max <- max(abs_z)
+
+# Find out which vertex has the maximum
+vert_id <- which(abs_z == abs_z_max)
+
+# Report
+vert_id
+zMap_xifti$data$cortex_right[vert_id, 1]
+```
+
+## 6. Using masks {.smaller}
+Let's create a thresholded z-map showing only the significant z-values.
+
+```{r mask1}
+# Convert the maps to matrices
+pMap1_mat <- as.matrix(pMap1_xifti)
+pMap2_mat <- as.matrix(pMap2_xifti)
+zMap_mat  <- as.matrix(zMap_xifti)
+
+# Threshold cut-off
+cutOff <- 1.301
+threshold_zMap_mat <- zMap_mat
+threshold_zMap_mat[pMap1_mat < cutOff & pMap2_mat < cutOff] <- NA
+
+# Create new xifti
+threshold_zMap <- newdata_xifti(select_xifti(zMap_xifti, 1), threshold_zMap_mat)
+```
+
+## 6. Using masks {.smaller}
+
+```{r mask2}
+view_cifti_surface(threshold_zMap, legend_embed = FALSE)
+```
+
+And we can also check if the new map is indeed a `XIFTI` object:
+
+```{r mask3}
+is.xifti(threshold_zMap)
+```
+
+## 6. Using masks {.smaller}
+
+Now, let's try to visualise the raw-beta values for significant voxels in the right hippocampus.
+
+Using the labels in the `XIFTI` object, we can find the hippocampal voxels:
+
+```{r mask4}
+unique(zMap_xifti$meta$subcort$labels)
+```
+
+With this, we can create a HC mask.
+
+```{r mask5}
+# Create masks
+HC_mask <- zMap_xifti$meta$subcort$labels == "Hippocampus-R"
+p_mask  <- pMap2_xifti$data$subcort > cutOff
+
+# Get the values from the beta maps
+betaValues <- betaMap_xifti$data$subcort[HC_mask & p_mask, ]
+
+# Checking the dimensions
+dim(betaValues)
+```
+
+Side note: We could use a similar approach to create a z-map that only contains z-values for the hippocampus.
+
+## 6. Using masks {.smaller}
+
+Let's now calculate the average beta-value for each subject within this mask and visualise:
+
+```{r mask6, fig.width = 1.5, fig.height = 3}
+# Calculate the average per subject by calculate the average of the column
+avgValues <- colMeans(betaValues)
+
+# Create df and plot
+avgValues_df <- data.frame(BOLD = avgValues)
+
+ggplot(avgValues_df, aes(x = 1, y = BOLD)) + 
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(height = 0) +
+  theme_classic() +
+  coord_cartesian(xlim = c(0, 2)) +
+  geom_hline(yintercept = 0, linetype = 2, colour = "red") +
+  labs(title = "Effect in\nright HC", x = "")
+```
+
+## 7. Doing math with `XIFTI` {.smaller}
+
+As an example, let's calculate a Cohen's d mask using our beta-values.
+
+```{r math1}
+# Calculate the mean and SD for each grayordinate and the Cohen's d
+meanMap <- apply_xifti(betaMap_xifti, margin = 1, FUN = mean)
+sdMap   <- apply_xifti(betaMap_xifti, margin = 1, FUN = sd)
+dMap    <- meanMap/sdMap
+```
+
+## 7. Doing math with `XIFTI` {.smaller}
+
+```{r math2}
+view_cifti_surface(dMap, legend_embed = FALSE)
+```
+
+The range of effect sizes is:
+
+```{r math3}
+range(dMap)
+```
+
+## 8. Smoothing {.smaller}
+
+```{r smooth1}
+# Create a new xifti by using another as a template
+new_xifti <- dMap
+
+# Set everything to zero
+new_xifti$data$cortex_left[, 1]  <- 0 
+new_xifti$data$cortex_right[, 1] <- 0 
+new_xifti$data$subcort[, 1]      <- 0 
+
+# Create a lateral frontal mask
+frontalMask_parcels <- c(84, 83, 81, 73, 79, 80) 
+frontalMask         <- MMP_xifti$data$cortex_left %in% (frontalMask_parcels + 180)
+
+# Set values within mask to 1
+new_xifti$data$cortex_left[frontalMask, 1] <- 1 
+
+# Now we smooth
+new_sm_xifti <- smooth_xifti(new_xifti, surf_FWHM = 6)
+```
+
+## 8. Smoothing {.smaller}
+Before:
+
+```{r smooth2}
+view_cifti_surface(new_xifti, legend_embed = FALSE)
+```
+
+
+## 8. Smoothing {.smaller}
+After:
+
+```{r smooth3}
+view_cifti_surface(new_sm_xifti, legend_embed = FALSE)
+```
+
+
+## 9. Clusters {.smaller}
+Pre-requisite: Use wb_command to find clusters.
+
+```{bash, eval = FALSE}
+### To create a binarised mask
+wb_command -cifti-math "mask > ${pThreshold}" -var mask ${pValueMap} ${binMask}
+
+### To find clusters within the binarised mask
+wb_command -cifti-find-clusters ${binMask} 0 0 0 0 COLUMN ${clusterMap} -left-surface "${path2atlas}/S1200.L.midthickness_MSMAll.32k_fs_LR.surf.gii" -right-surface "${path2atlas}/S1200.R.midthickness_MSMAll.32k_fs_LR.surf.gii" -merged-volume
+```
+
+## 9. Clusters {.smaller}
+After this I can use my custom function:
+
+```{r cluster1}
+# Create cluster tables
+cluster1 <- cifti_cluster_report("data/ciftiFiles/results_lvl2cope1_dat_ztstat_c1.dscalar.nii", 
+                                 "data/ciftiFiles/results_lvl2cope1_dat_ztstat_cfdrp_c1_clusters.dscalar.nii", 
+                                  surfLeft, surfRight, MMP, 10, FALSE)
+
+head(cluster1$cluster_values)
+```
+
+## 9. Clusters {.smaller}
+
+```{r cluster2}
+head(cluster1$cluster_labels)
+```
+
+## 10. Misc {.smaller}
+This is how we can write new `CIFTI` files:
+
+```{r, misc1}
+write_cifti(xifti = new_sm_xifti, cifti_fname = "data/ciftiFiles/smooth_frontalMask.dscalar.nii")
+```
+
+## 10. Misc {.smaller}
+Accessing the vertices and faces, which can be used to find which are the neighbours of a vertex:
+
+```{r misc2}
+# Get verts and faces
+vert  <- zMap_xifti$surf$cortex_left$vertices
+faces <- zMap_xifti$surf$cortex_left$faces
+
+# Visualise
+ggplot(as.data.frame(vert), aes(x = V2, y = V3, colour = V2)) +
+  geom_point(pch = 1) +
+  theme_void() +
+  coord_equal() +
+  scale_colour_viridis_c(option = "F") +
+  theme(legend.position = "none")
+```
+
+## 10. Misc {.smaller}
+
+```{r misc3}
+# The neighbours of vertex 256
+bool_faces <- faces == 256
+face_index <- rowMeans(bool_faces) > 0 
+faces[face_index, ]
+unique(c(faces[face_index, ]))
+```
+
+## 10. Misc {.smaller}
+
+Lastly, here is how you can create add/change the dlabel legend adding new keys or changing the colours used.  
+
+```{r misc4, eval = FALSE}
+# Get the old labels
+old_key_colours <- xii$meta$cifti$labels$`vertex areas`
+
+# Create new colours
+new_key_colours <- old_key_colours[-(2:nrow(old_key_colours)),]
+row.names(new_key_colours)[1] <- ""
+
+# Loop through all levels
+for(i in 1:conN){
+  # Set the colours
+  RGB_Col <- col2rgb(conColours[i])/255
+  temp_key_colour <- data.frame(Key = i,
+                                Red = RGB_Col[1],
+                                Green = RGB_Col[2],
+                                Blue = RGB_Col[3],
+                                Alpha = 1)
+  
+  new_key_colours <- rbind(new_key_colours, temp_key_colour)
+}
+
+row.names(new_key_colours) <- c("", keyLabels)
+
+xii$meta$cifti$labels$`vertex areas` <- new_key_colours
+```
+
